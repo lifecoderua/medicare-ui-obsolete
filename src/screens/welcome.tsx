@@ -20,6 +20,7 @@ export class WelcomeScreen extends Component<{}, State> {
       persistence: 'Checking offline capabilities',
     };
 
+    this.db = null;
     this.dbRead();
   }
 
@@ -42,11 +43,12 @@ export class WelcomeScreen extends Component<{}, State> {
     // firebase.analytics();
 
     const db = firebase.firestore();
+    this.db = db;
 
-
-    db.enablePersistence()
-    .then(() => (this.setState({persistence: 'Offline support activated!'})))
-    .catch(function(err) {
+    try {
+      await db.enablePersistence();
+      this.setState({persistence: 'Offline support activated!'});
+    } catch(err) {
         if (err.code == 'failed-precondition') {
             // Multiple tabs open, persistence can only be enabled
             // in one tab at a a time.
@@ -58,13 +60,14 @@ export class WelcomeScreen extends Component<{}, State> {
             // ...
             this.setState({persistence: 'Offline support UNAVAILABLE!'})
         }
-    });
+    };
 
-    // db.collection("users").add({
-    //   first: "Ada",
-    //   last: "Lovelace",
-    //   born: 1815
-    // })
+    await db.disableNetwork();
+    console.log('network disabled');
+
+    await db.enableNetwork();
+    console.log('network enabled');
+
     // .then(function(docRef) {
     //     console.log("Document written with ID: ", docRef.id);
     // })
@@ -77,6 +80,33 @@ export class WelcomeScreen extends Component<{}, State> {
             console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
         });
     });
+  }
+
+  async storeUser() {
+    console.log('Write started');
+    function timeout(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+    try {
+      const docRef = await Promise.race([
+        this.db.collection("users").add({
+          email: this.state.email,
+          first: "Porta",
+          last: "war",
+          born: 1215
+        }),
+        timeout(5000)
+      ]);
+
+      if (docRef) {
+        console.log("Document written with ID: ", docRef.id);
+      } else {
+        console.log('write stopped by timeout');
+      }
+
+    } catch(error) {
+      console.error("Error adding document: ", error);
+    }
   }
 
   render() {
@@ -101,7 +131,11 @@ export class WelcomeScreen extends Component<{}, State> {
           onPress={() => console.log('Submit:', this.state)}
         ></Button>
         <TouchableOpacity
-          onPress={() => console.log('Submit:', this.state)}>
+          onPress={() => {
+              this.storeUser();
+              console.log('Submit:', this.state);
+            }
+          }>
           <Text>Press me for submit</Text>
         </TouchableOpacity>
       </View>
