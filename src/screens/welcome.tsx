@@ -42,6 +42,9 @@ export class WelcomeScreen extends Component<{}, State> {
     // not a function on iOS
     // firebase.analytics();
 
+    // TODO: indicate SYNC state. Check
+    // firestore.SnapshotMetadata .fromCache : bool / .hasPendingWrites : bool
+
     const db = firebase.firestore();
     this.db = db;
 
