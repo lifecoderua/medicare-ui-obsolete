@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, TextInput, View, Button, TouchableOpacity } from 'react-native';
 import * as firebase from 'firebase';
+import '@firebase/firestore';
 
 interface State {
   email: string,
   password: string,
+
+  persistence: string,
 }
 
 export class WelcomeScreen extends Component<{}, State> {
@@ -13,6 +16,8 @@ export class WelcomeScreen extends Component<{}, State> {
     this.state = {
       email: '',
       password: '',
+
+      persistence: 'Checking offline capabilities',
     };
 
     this.dbRead();
@@ -32,9 +37,28 @@ export class WelcomeScreen extends Component<{}, State> {
     };
 
     firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
+    
+    // not a function on iOS
+    // firebase.analytics();
 
     const db = firebase.firestore();
+
+
+    db.enablePersistence()
+    .then(() => (this.setState({persistence: 'Offline support activated!'})))
+    .catch(function(err) {
+        if (err.code == 'failed-precondition') {
+            // Multiple tabs open, persistence can only be enabled
+            // in one tab at a a time.
+            // ...
+            this.setState({persistence: 'Another tab is open, please close one of the tabs!'})
+        } else if (err.code == 'unimplemented') {
+            // The current browser does not support all of the
+            // features required to enable persistence
+            // ...
+            this.setState({persistence: 'Offline support UNAVAILABLE!'})
+        }
+    });
 
     // db.collection("users").add({
     //   first: "Ada",
@@ -59,7 +83,8 @@ export class WelcomeScreen extends Component<{}, State> {
     return (
       <View style={styles.container}>
         <Text>I am the Welcome screen</Text>
-        <Text>Hello <strong>John Doe</strong></Text>
+        <Text>Hello John Doe</Text>
+        <Text>{this.state.persistence}</Text>
         <TextInput
           placeholder="Email"
           onChangeText={(email) => this.setState({email})}
