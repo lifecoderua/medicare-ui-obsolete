@@ -11,6 +11,8 @@ interface State {
 }
 
 export class WelcomeScreen extends Component<{}, State> {
+  private db;
+
   constructor(props) {
     super(props);
     this.state = {
@@ -20,7 +22,6 @@ export class WelcomeScreen extends Component<{}, State> {
       persistence: 'Checking offline capabilities',
     };
 
-    this.db = null;
     this.dbRead();
   }
 
