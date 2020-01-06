@@ -10,7 +10,7 @@ interface State {
   persistence: string,
 }
 
-export class WelcomeScreen extends Component<{}, State> {
+export class WelcomeScreen extends Component<any, State> {
   private db;
 
   constructor(props) {
@@ -142,6 +142,11 @@ export class WelcomeScreen extends Component<{}, State> {
           }>
           <Text>Press me for submit</Text>
         </TouchableOpacity>
+
+        <Button
+          title="Go to Patients"
+          onPress={() => this.props.navigation.navigate('Patients')}
+        />
       </View>
     );
   }
