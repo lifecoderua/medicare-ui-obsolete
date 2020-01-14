@@ -26,31 +26,8 @@ export class WelcomeScreen extends Component<any, State> {
   }
 
   async dbRead() {
-    // not a function on iOS
-    // firebase.analytics();
-
-    // TODO: indicate SYNC state. Check
-    // firestore.SnapshotMetadata .fromCache : bool / .hasPendingWrites : bool
-
     const db = store.db;
     this.db = db;
-
-    try {
-      await db.enablePersistence();
-      this.setState({persistence: 'Offline support activated!'});
-    } catch(err) {
-        if (err.code == 'failed-precondition') {
-            // Multiple tabs open, persistence can only be enabled
-            // in one tab at a a time.
-            // ...
-            this.setState({persistence: 'Another tab is open, please close one of the tabs!'})
-        } else if (err.code == 'unimplemented') {
-            // The current browser does not support all of the
-            // features required to enable persistence
-            // ...
-            this.setState({persistence: 'Offline support UNAVAILABLE!'})
-        }
-    };
 
     await db.disableNetwork();
     console.log('network disabled');
