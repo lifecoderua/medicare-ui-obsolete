@@ -7,7 +7,7 @@ interface State {
   patients: [],
 }
 
-export class PatientsScreen extends Component<any> {
+export class PatientsScreen extends Component<any, State> {
   constructor(props) {
     super(props);
     this.state = {
@@ -19,9 +19,7 @@ export class PatientsScreen extends Component<any> {
     db.collection("users").get().then((querySnapshot) => {
       const updatedPatientsList = [];
       // TODO: more efficient data-only push required
-      console.log('docs', querySnapshot.docs);
       querySnapshot.forEach((doc) => {
-          console.log(`${doc.id} => ${JSON.stringify(doc.data())}`);
           updatedPatientsList.push(Object.assign({}, {key: doc.id}, doc.data()));
       });
 
