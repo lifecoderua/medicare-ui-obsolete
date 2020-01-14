@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Button, FlatList } from 'react-native';
 import store from '../services/firebase.service';
 
 interface State {
-  patients: [],
+  patients: any,
 }
 
 export class PatientsScreen extends Component<any, State> {
@@ -35,7 +35,7 @@ export class PatientsScreen extends Component<any, State> {
 
         <FlatList 
           data={this.state.patients}
-          renderItem={({item}) => <Text>{item.first} {item.last} @ {item.email}</Text>}
+          renderItem={({item}: any) => <Text>{item.first} {item.last} @ {item.email}</Text>}
           ></FlatList>
 
         <Button
