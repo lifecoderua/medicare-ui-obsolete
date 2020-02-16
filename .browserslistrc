@@ -1,0 +1,6 @@
+# Browsers that we support
+last 2 versions, not dead, > 1% in US
+# Microsoft no longer provides security updates for IE <= 10
+ie >= 11
+# Apple no longer provides updates for the iPad Mini
+ios >= 9
